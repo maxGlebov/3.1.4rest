@@ -8,7 +8,6 @@
 </head>
 <body>
 
-<!-- Top Header -->
 <nav class="navbar navbar-dark bg-dark text-white px-3">
     <span th:text="${#authentication.name} + ' with roles: ' + ${#authentication.principal.authorities}">admin@mail.ru with roles: ADMIN USER</span>
     <form th:action="@{/logout}" method="post" class="d-inline">

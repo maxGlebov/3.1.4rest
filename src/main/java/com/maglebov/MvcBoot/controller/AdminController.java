@@ -1,5 +1,3 @@
-// src/main/java/com/maglebov/MvcBoot/controller/AdminController.java
-
 package com.maglebov.MvcBoot.controller;
 
 import com.maglebov.MvcBoot.model.User;
@@ -8,7 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 @RequestMapping("/admin")
@@ -37,7 +39,11 @@ public class AdminController {
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
-    public String create(@ModelAttribute("user") User user) {
+    @Transactional
+    public String create(@Valid @ModelAttribute("user") User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return "addUser";
+        }
         userService.addUser(user);
         return "redirect:/admin";
     }
@@ -55,7 +61,11 @@ public class AdminController {
 
     @PostMapping("/edit/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String update(@PathVariable("id") Long id, @ModelAttribute("user") User user) {
+    @Transactional
+    public String update(@PathVariable("id") Long id, @Valid @ModelAttribute("user") User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return "editUser";
+        }
         user.setId(id);
         userService.editUser(user);
         return "redirect:/admin";
@@ -63,6 +73,7 @@ public class AdminController {
 
     @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public String delete(@RequestParam("id") Long id) {
         userService.deleteUser(id);
         return "redirect:/admin";
